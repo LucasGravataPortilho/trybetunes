@@ -29,7 +29,7 @@ class Login extends Component {
     event.preventDefault();
     const { name } = this.state;
     const { history } = this.props;
-    const three = 3000;
+    const time = 1000;
 
     this.setState({
       loading: true,
@@ -37,7 +37,10 @@ class Login extends Component {
     createUser({ name });
     setTimeout(() => {
       history.push('/search');
-    }, three);
+      this.setState({
+        loading: false,
+      });
+    }, time);
   }
 
   disabledButton() {

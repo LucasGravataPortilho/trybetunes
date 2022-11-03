@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import Header from './Header';
+import searchAlbumsAPI from '../services/searchAlbumsAPI';
 
 class Search extends Component {
   constructor() {
@@ -7,6 +8,7 @@ class Search extends Component {
 
     this.onInputChange = this.onInputChange.bind(this);
     this.disabledButton = this.disabledButton.bind(this);
+    this.onSubmitChange = this.onSubmitChange.bind(this);
 
     this.state = {
       search: '',
@@ -19,6 +21,16 @@ class Search extends Component {
     this.setState({
       [name]: value,
     }, () => this.disabledButton());
+  }
+
+  onSubmitChange(event) {
+    event.preventDefault();
+    const { search } = this.state;
+
+    searchAlbumsAPI({ search });
+    this.setState({
+      search: '',
+    });
   }
 
   disabledButton() {
