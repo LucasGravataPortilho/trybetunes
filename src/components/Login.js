@@ -30,6 +30,7 @@ class Login extends Component {
     const { name } = this.state;
     const { history } = this.props;
     const three = 3000;
+
     this.setState({
       loading: true,
     });
