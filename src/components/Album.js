@@ -17,7 +17,7 @@ class Album extends Component {
       songs: [],
       albumTitle: '',
       loading: false,
-      checkedSongs: {},
+      checkedSongs: [],
       favorites: [],
     };
   }
@@ -37,9 +37,9 @@ class Album extends Component {
   async handleGetFavoritesSongs() {
     const { songs } = this.state;
     const time = 1000;
-    const favoriteSongs = await getFavoriteSongs();
+    const favoritesSongs = await getFavoriteSongs();
 
-    const filteredAlbum = favoriteSongs
+    const filteredAlbum = favoritesSongs
       .filter(({ collectionId }) => collectionId === songs[0].collectionId);
 
     if (filteredAlbum.length > 0) {
@@ -77,8 +77,9 @@ class Album extends Component {
       this.setState({
         loading: true,
       });
+
       setTimeout(async () => {
-        const getSong = songs.find(({ trackId }) => id === trackId);
+        const getSong = songs.find(({ trackId }) => Number(id) === Number(trackId));
         addSong(getSong);
         const musicasFavoritas = await getFavoriteSongs();
         this.setState({
@@ -90,8 +91,9 @@ class Album extends Component {
       this.setState({
         loading: true,
       });
+
       setTimeout(async () => {
-        const getSong = songs.find(({ trackId }) => id === trackId);
+        const getSong = songs.find(({ trackId }) => Number(id) === Number(trackId));
         removeSong(getSong);
         const musicasFavoritas = await getFavoriteSongs();
         this.setState({
