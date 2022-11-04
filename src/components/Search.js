@@ -35,7 +35,6 @@ class Search extends Component {
     this.setState({
       loading: true,
     });
-
     const retorno = await searchAlbumsAPI(search);
 
     this.setState({
@@ -51,9 +50,9 @@ class Search extends Component {
     }
     if (albums.length > 0) {
       return (
-        <p>
+        <h2>
           {`Resultado de álbuns de: ${search}`}
-        </p>
+        </h2>
       );
     }
   }

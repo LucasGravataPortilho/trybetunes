@@ -3,14 +3,22 @@ import PropTypes from 'prop-types';
 import Header from './Header';
 import getMusics from '../services/musicsAPI';
 import MusicCard from './MusicCard';
+import { addSong, getFavoriteSongs } from '../services/favoriteSongsAPI';
+import Loading from './Loading';
 
 class Album extends Component {
   constructor() {
     super();
 
+    this.getFavorites = this.getFavorites.bind(this);
+    this.handleGetFavoritesSongs = this.handleGetFavoritesSongs.bind(this);
+
     this.state = {
       songs: [],
       albumTitle: '',
+      loading: false,
+      checkedSongs: [],
+      favorites: [],
     };
   }
 
@@ -24,20 +32,78 @@ class Album extends Component {
     this.setState({
       songs: musicas,
       albumTitle: infosAlbum,
-    });
+    }, this.handleGetFavoritesSongs);
+  }
+
+  async handleGetFavoritesSongs() {
+    const { songs } = this.state;
+    const time = 1000;
+    const favoriteSongs = await getFavoriteSongs();
+
+    const filteredAlbum = favoriteSongs
+      .filter(({ collectionId }) => collectionId === songs[0].collectionId);
+
+    if (filteredAlbum.length > 0) {
+      this.setState({
+        loading: true,
+      });
+    }
+
+    setTimeout(() => {
+      const filteredList = filteredAlbum.filter(({ trackId }) => trackId === songs
+        .find((song) => song.trackId === trackId).trackId);
+
+      filteredList.forEach((song) => {
+        this.setState((prevState) => ({
+          checkedSongs: { ...prevState.checkedSongs, [song.trackId]: true },
+        }));
+      });
+
+      this.setState({
+        loading: false,
+      });
+    }, time);
+  }
+
+  getFavorites({ target }) {
+    const { songs } = this.state;
+    const { name, checked, id } = target;
+    const time = 1000;
+
+    this.setState((prevState) => ({
+      checkedSongs: { ...prevState.checkedSongs, [name]: checked },
+    }));
+
+    if (checked) {
+      this.setState({
+        loading: true,
+      });
+      setTimeout(async () => {
+        const getSong = songs.find(({ trackId }) => id === trackId);
+        addSong(getSong);
+        const musicasFavoritas = await getFavoriteSongs();
+        this.setState({
+          loading: false,
+          favorites: musicasFavoritas,
+        });
+      }, time);
+    }
   }
 
   render() {
-    const { songs, albumTitle } = this.state;
+    const { songs, albumTitle, loading, checkedSongs, favorites } = this.state;
     return (
       <div data-testid="page-album">
         <Header />
         <p data-testid="artist-name">{albumTitle.artistName}</p>
         <p data-testid="album-name">{albumTitle.collectionName}</p>
-        { songs.map((song, index) => (<MusicCard
+        { loading ? <Loading /> : songs.map((song, index) => (<MusicCard
           key={ song.trackId + index }
           trackName={ song.trackName }
           previewUrl={ song.previewUrl }
+          trackId={ song.trackId }
+          getFavorites={ this.getFavorites }
+          checkedSongs={ checkedSongs[song.trackId] }
         />))}
       </div>
     );
