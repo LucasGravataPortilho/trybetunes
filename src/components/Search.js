@@ -15,6 +15,7 @@ class Search extends Component {
 
     this.state = {
       search: '',
+      searchedInput: '',
       isDisabled: true,
       loading: false,
       albums: [],
@@ -40,18 +41,20 @@ class Search extends Component {
     this.setState({
       loading: false,
       albums: retorno,
+      searchedInput: search,
+      search: '',
     });
   }
 
   searchReturn() {
-    const { albums, search } = this.state;
+    const { albums, searchedInput } = this.state;
     if (albums.length === 0) {
       return <p>Nenhum álbum foi encontrado</p>;
     }
     if (albums.length > 0) {
       return (
         <h2>
-          {`Resultado de álbuns de: ${search}`}
+          {`Resultado de álbuns de: ${searchedInput}`}
         </h2>
       );
     }
